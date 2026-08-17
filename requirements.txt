@@ -1,0 +1,2 @@
+jupyterlite-core>=0.6
+jupyterlite-xeus>=5,<6
