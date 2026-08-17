@@ -1,4 +1,4 @@
-name: Build and Deploy JupyterLite (xeus-cpp)
+name: Build and Deploy JupyterLite (xeus-cpp) 
 
 on:
   push:
