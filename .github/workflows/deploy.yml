@@ -1,0 +1,50 @@
+name: Build and Deploy JupyterLite (xeus-cpp)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          init-shell: bash
+          environment-name: build-env
+          create-args: >-
+            python=3.12
+            pip
+
+      - name: Install build tools
+        shell: bash -l {0}
+        run: pip install -r requirements.txt
+
+      - name: Build JupyterLite site
+        shell: bash -l {0}
+        run: jupyter lite build --XeusAddon.environment_file=environment.yml --contents content --output-dir dist
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
